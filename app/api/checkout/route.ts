@@ -1,21 +1,21 @@
-import { NextResponse } from 'next/server'
-import Stripe from 'stripe'
+import { NextResponse } from "next/server";
+import Stripe from "stripe";
 
 // Initialize Stripe with the correct API version
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-12-18.acacia', // Update to match Stripe's current version
-})
+  apiVersion: "2025-01-27.acacia", // Update to match Stripe's current version
+});
 
 export async function POST(req: Request) {
   try {
-    const { items, customer } = await req.json()
+    const { items, customer } = await req.json();
 
     // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
+      payment_method_types: ["card"],
       line_items: items.map((item) => ({
         price_data: {
-          currency: 'usd',
+          currency: "usd",
           product_data: {
             name: item.product.title,
             images: [item.product.thumbnail],
@@ -25,7 +25,7 @@ export async function POST(req: Request) {
         },
         quantity: item.quantity,
       })),
-      mode: 'payment',
+      mode: "payment",
       success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/checkout?canceled=true`,
       customer_email: customer.email,
@@ -36,21 +36,26 @@ export async function POST(req: Request) {
         zip: customer.zip,
       },
       shipping_address_collection: {
-        allowed_countries: ['US'], // Add more countries as needed
+        allowed_countries: ["US"], // Add more countries as needed
       },
-      billing_address_collection: 'required',
+      billing_address_collection: "required",
       phone_number_collection: {
         enabled: true,
       },
       allow_promotion_codes: true,
-    })
+    });
 
-    return NextResponse.json({ url: session.url })
+    return NextResponse.json({ url: session.url });
   } catch (error) {
-    console.error('Checkout error:', error)
+    console.error("Checkout error:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to create checkout session' },
+      {
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to create checkout session",
+      },
       { status: 500 }
-    )
+    );
   }
-} 
+}
