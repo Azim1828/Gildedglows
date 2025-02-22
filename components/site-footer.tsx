@@ -24,6 +24,7 @@ export function SiteFooter() {
                 JiangSuShengSuQianShi, 223800, China
               </p>
               <p>baisdejacqui233784@outlook.com</p>
+              <p>Contact Person: Wang Liu</p>
             </div>
           </div>
           {/* Information */}
